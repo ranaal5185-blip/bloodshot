@@ -1,23 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BLOODSHOT</title>
-<style>
-  html, body { margin: 0; height: 100%; background: #030303; display: flex; align-items: center; justify-content: center; }
-  canvas { image-rendering: pixelated; max-width: 100vw; max-height: 100vh; }
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Hacker - Final Puzzle</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<script src="js/config.js"></script>
-<script src="js/data/videoData.js"></script>
-<script src="js/scenes/BootScene.js"></script>
-<script src="js/scenes/MenuScene.js"></script>
-<script src="js/scenes/AnalystScene.js"></script>
-<script src="js/scenes/HackerScene.js"></script>
-<script src="js/scenes/EndScene.js"></script>
-<script src="js/main.js"></script>
+<!-- Backstory Screen -->
+<div id="backstoryScreen" class="backstory-screen">
+
+    <h1 id="storyTitle"></h1>
+
+    <img id="storyImage" src="" alt="Story Clue">
+
+    <p id="storyText"></p>
+
+    <p id="storyDescription"></p>
+
+    <p id="storyClue"></p>
+
+    <button id="nextStoryBtn">NEXT</button>
+
+</div>
+    <div class="game-container">
+
+        <h1>FINAL SECURITY CHECK</h1>
+
+        <p class="subtitle">CAESAR CIPHER</p>
+
+        <div class="timer">
+            TIME LEFT: <span id="timer">30</span>
+        </div>
+
+        <div class="puzzle-box">
+
+            <h2>ENCRYPTED MESSAGE</h2>
+
+            <div class="code">FRGH</div>
+
+            <p class="hint">
+                Hint: Shift each letter 3 positions backward.
+            </p>
+
+            <input
+                type="text"
+                id="answer"
+                placeholder="Enter decrypted word"
+            >
+
+            <button id="submitBtn">
+                DECRYPT
+            </button>
+
+            <p id="message"></p>
+
+        </div>
+
+    </div>
+
+    <div id="failureScreen" class="failure-screen hidden">
+    <h1>ACCESS DENIED</h1>
+    <p>YOU FAILED THE MISSION</p>
+    <p>THE SECURITY TEAM HAS BEEN ALERTED</p>
+
+     <button id="retryFailure">PLAY AGAIN</button>
+</div>
+<div id="successScreen" class="success-screen hidden">
+    <h1>ACCESS GRANTED</h1>
+    <p>MISSION COMPLETED!</p>
+    <p>YOU HACKED THE SYSTEM</p>
+
+     <button id="retrySuccess">PLAY AGAIN</button>
+</div>
+<script src="backstory.js"></script>
+    <script src="game.js"></script>
 </body>
 </html>
+

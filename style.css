@@ -1,0 +1,252 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #080808;
+    color: #ffffff;
+   font-family: 'Press Start 2P', cursive;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-container {
+    width: 90%;
+    max-width: 850px;
+    text-align: center;
+    padding: 35px;
+    background: #111111;
+    border: 2px solid #cc0000;
+    border-radius: 15px;
+    box-shadow: 0 0 25px #cc0000;
+}
+
+h1 {
+    color: #ffffff;
+    font-size: 32px;
+    letter-spacing: 3px;
+    text-shadow: 0 0 15px #cc0000;
+}
+
+.subtitle {
+    color: #ffffff;
+    margin-top: 15px;
+    letter-spacing: 4px;
+}
+
+.timer {
+    margin: 30px auto;
+    color: #ff2020;
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 0 0 12px #cc0000;
+}
+
+.puzzle-box {
+    background: #1a1a1a;
+    padding: 30px;
+    border: 1px solid #cc0000;
+    border-radius: 12px;
+    box-shadow: 0 0 15px #660000;
+}
+
+h2 {
+    color: #ffffff;
+    margin-bottom: 25px;
+}
+
+.code {
+    color: #ff2020;
+    font-size: 55px;
+    font-weight: bold;
+    letter-spacing: 15px;
+    margin: 25px;
+    text-shadow: 0 0 20px #cc0000;
+}
+
+.hint {
+    color: #ffffff;
+    margin-bottom: 25px;
+}
+
+input {
+    width: 80%;
+    padding: 15px;
+    background: #080808;
+    border: 1px solid #cc0000;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    text-align: center;
+    outline: none;
+}
+
+button {
+    display: block;
+    margin: 20px auto;
+    padding: 14px 40px;
+    background: #cc0000;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 15px #cc0000;
+}
+
+button:hover {
+    background: #cc0000;
+    box-shadow: 0 0 25px #cc0000;
+}
+
+#message {
+    font-size: 20px;
+    margin-top: 20px;
+}
+/* Failure Screen */
+
+.failure-screen {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.97);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    text-align: center;
+    animation: glitch 0.3s infinite alternate;
+}
+
+.failure-screen h1 {
+    color: #ff2020;
+    font-size: 55px;
+    text-shadow: 0 0 15px red, 0 0 35px red;
+    letter-spacing: 5px;
+}
+
+.failure-screen p {
+    color: #ffffff;
+    margin-top: 20px;
+    font-size: 18px;
+    letter-spacing: 2px;
+}
+
+.hidden {
+    display: none;
+}
+
+@keyframes glitch {
+    from {
+        transform: translateX(-2px);
+    }
+
+    to {
+        transform: translateX(2px);
+    }
+}
+/* Success Screen */
+
+.success-screen {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.97);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    text-align: center;
+}
+
+.success-screen h1 {
+    color: #ffffff;
+    font-size: 55px;
+    text-shadow: 0 0 15px #cc0000, 0 0 35px #cc0000;
+    letter-spacing: 4px;
+}
+
+.success-screen p {
+    color: #ffffff;
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+.hidden {
+    display: none !important;
+}
+.timer-danger {
+    animation: pulse-danger 0.6s infinite alternate;
+    font-weight: bold;
+}
+
+@keyframes pulse-danger {
+    from {
+        transform: scale(1);
+        text-shadow: 0 0 5px red;
+    }
+
+    to {
+        transform: scale(1.2);
+        text-shadow: 0 0 25px red;
+    }
+}
+/* Backstory Screen */
+.backstory-screen {
+    width: 90%;
+    max-width: 850px;
+    padding: 30px;
+    text-align: center;
+    background: #111111;
+    border: 2px solid #cc0000;
+    border-radius: 15px;
+    box-shadow: 0 0 25px #cc0000;
+    margin: 30px auto;
+}
+
+.backstory-screen h1 {
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.backstory-screen img {
+    width: 100%;
+    max-width: 400px;
+    max-height: 350px;
+    object-fit: contain;
+    border-radius: 12px;
+    margin: 15px auto;
+}
+
+.backstory-screen p {
+    color: #ffffff;
+    margin: 15px 0;
+    line-height: 1.6;
+}
+
+.game-container {
+    display: none;
+}
+#retrySuccess,
+#retryFailure {
+    background: #cc0000;
+    color: white;
+    font-family: 'Press Start 2P', cursive;
+    padding: 15px 25px;
+    border: 2px solid white;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+    box-shadow: 0 0 15px #ff0000;
+}
+
+#retrySuccess:hover,
+#retryFailure:hover {
+    background: #ff0000;
+    box-shadow: 0 0 25px #ff0000;
+}
