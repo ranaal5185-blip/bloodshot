@@ -1,0 +1,102 @@
+[
+  {
+    "id": 1,
+    "subject": "Confidential – Management Only",
+    "text": "This communication is intended exclusively for Management and the Finance Department.\n\nPlease do not share its contents or notify the Cybersecurity Department. The matter is being handled internally.",
+    "sender": "finance@RADXIS.com.sa",
+    "attachment": "Confidential_Financial_Report.pdf",
+    "category": "insider",
+    "type": "threat",
+    "employee": "EMP-1042"
+  },
+  {
+    "id": 2,
+    "subject": "Urgent – Database Backup",
+    "text": "I need a copy of the customer database and current contract files to complete an internal review before the end of the day.\n\nPlease send the copy directly without submitting a request through the usual system.",
+    "sender": "operations@RADXIS.com.sa",
+    "attachment": "Client_Data_Backup.zip",
+    "category": "insider",
+    "type": "threat",
+    "employee": "EMP-1098"
+  },
+  {
+    "id": 3,
+    "subject": "Employee of the Month Award",
+    "text": "We are pleased to inform you that you have been nominated for the Employee of the Month Award.\n\nPlease confirm your participation by replying to this email before the end of the day.\n\nBest regards,\nHuman Resources Department.",
+    "sender": "employee1120@RADXIS.com.sa",
+    "attachment": "",
+    "category": "insider",
+    "type": "threat",
+    "employee": "EMP-1120"
+  },
+  {
+    "id": 4,
+    "subject": "Sorry, Sent by Mistake",
+    "text": "Sorry, I accidentally sent you the wrong image. Please do not open it. I will send the correct version later.",
+    "sender": "unknown@external-mail.com",
+    "attachment": "Image_001.jpg — Loading...",
+    "category": "external",
+    "type": "threat",
+    "employee": null
+  },
+  {
+    "id": 5,
+    "subject": "Your Order Has Been Confirmed",
+    "text": "Your order of SAR 1,499 has been confirmed.\n\nTo cancel your order, a cancellation fee of SAR 10 is required.",
+    "sender": "orders@unknown-shop.com",
+    "attachment": "[Cancel Order]",
+    "category": "external",
+    "type": "threat",
+    "employee": null
+  },
+  {
+    "id": 6,
+    "subject": "Flight Cancellation Notice",
+    "text": "Your flight reservation has been canceled.\n\nBooking Reference: TR5821",
+    "sender": "booking@unknown-flight.com",
+    "attachment": "Flight_Cancellation.pdf",
+    "category": "external",
+    "type": "threat",
+    "employee": null
+  },
+  {
+    "id": 7,
+    "subject": "Is This You?",
+    "text": "Hello,\n\nYour name and some of your personal information were found in a list of leaked data online.",
+    "sender": "Anonymous",
+    "attachment": "Leaked_Records.zip",
+    "category": "external",
+    "type": "threat",
+    "employee": null
+  },
+  {
+    "id": 8,
+    "subject": "Weekly Meeting Reminder",
+    "text": "This is a reminder that our weekly meeting will take place tomorrow at 10:00 AM in the main meeting room.\n\nBest regards,\nAdministration Department.",
+    "sender": "admin@RADXIS.com.sa",
+    "attachment": "",
+    "category": "legitimate",
+    "type": "safe",
+    "employee": "EMP-1073"
+  },
+  {
+    "id": 9,
+    "subject": "Monthly IT Report",
+    "text": "Please find attached the monthly report covering system performance, technical updates, and maintenance completed this month.\n\nBest regards,\nIT Department.",
+    "sender": "it@RADXIS.com.sa",
+    "attachment": "IT_Monthly_Report.pdf",
+    "category": "legitimate",
+    "type": "safe",
+    "employee": "EMP-1156"
+  },
+  {
+    "id": 10,
+    "subject": "Working Hours Update",
+    "text": "Please note that working hours on Thursday will be adjusted to 8:00 AM – 2:00 PM.\n\nBest regards,\nHuman Resources Department.",
+    "sender": "hr@RADXIS.com.sa",
+    "attachment": "",
+    "category": "legitimate",
+    "type": "safe",
+    "employee": "EMP-1073"
+  }
+]
