@@ -1,85 +1,22 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Hacker - Final Puzzle</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Student 2 - Systems Test</title>
+  <style>html,body{margin:0;background:#030303;height:100%}</style>
 </head>
-
 <body>
-<!-- Backstory Screen -->
-<div id="backstoryScreen" class="backstory-screen">
-
-    <h1 id="storyTitle"></h1>
-
-    <img id="storyImage" src="" alt="Story Clue">
-
-    <p id="storyText"></p>
-
-    <p id="storyDescription"></p>
-
-    <p id="storyClue"></p>
-
-    <button id="nextStoryBtn">NEXT</button>
-
-</div>
-    <div class="game-container">
-
-        <h1>FINAL SECURITY CHECK</h1>
-
-        <p class="subtitle">CAESAR CIPHER</p>
-
-        <div class="timer">
-            TIME LEFT: <span id="timer">30</span>
-        </div>
-
-        <div class="puzzle-box">
-
-            <h2>ENCRYPTED MESSAGE</h2>
-
-            <div class="code">FRGH</div>
-
-            <p class="hint">
-                Hint: Shift each letter 3 positions backward.
-            </p>
-
-            <input
-                type="text"
-                id="answer"
-                placeholder="Enter decrypted word"
-            >
-
-            <button id="submitBtn">
-                DECRYPT
-            </button>
-
-            <p id="message"></p>
-
-        </div>
-
-    </div>
-
-    <div id="failureScreen" class="failure-screen hidden">
-    <h1>ACCESS DENIED</h1>
-    <p>YOU FAILED THE MISSION</p>
-    <p>THE SECURITY TEAM HAS BEEN ALERTED</p>
-
-     <button id="retryFailure">PLAY AGAIN</button>
-</div>
-<div id="successScreen" class="success-screen hidden">
-    <h1>ACCESS GRANTED</h1>
-    <p>MISSION COMPLETED!</p>
-    <p>YOU HACKED THE SYSTEM</p>
-
-     <button id="retrySuccess">PLAY AGAIN</button>
-</div>
-<script src="backstory.js"></script>
-    <script src="game.js"></script>
+  <script src="phaser.min.js"></script>
+  <!-- الأنظمة أولاً -->
+  <script src="../js/systems/DragHelper.js"></script>
+  <script src="../js/systems/Effects.js"></script>
+  <script src="../js/systems/AudioManager.js"></script>
+  <script src="../js/systems/PhysicsHelper.js"></script>
+  <script src="../js/systems/TileSpriteHelper.js"></script>
+  <script src="../js/systems/InputHelper.js"></script>
+  <!-- ثم المشاهد ثم الإعداد -->
+  <script src="SystemsDemoScene.js"></script>
+  <script src="HackerCipherDemo.js"></script>
+  <script src="demo.js"></script>
 </body>
 </html>
-
