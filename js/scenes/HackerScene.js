@@ -4,7 +4,7 @@ class HackerScene extends Phaser.Scene {
     }
 
     preload() {
-    
+        
         if (!this.textures.exists('coffe1')) {
             this.load.image('coffe1', 'assets/coffe1.jpeg');
         }
@@ -27,8 +27,8 @@ class HackerScene extends Phaser.Scene {
     }
 
     create() {
-        const w = this.scale.width;
-        const h = this.scale.height;
+        const w = this.scale.width;   // 1552
+        const h = this.scale.height;  // 790
         this.fontName = (typeof FONT !== 'undefined') ? FONT : 'monospace';
 
         // base background
@@ -75,6 +75,16 @@ class HackerScene extends Phaser.Scene {
         }
     }
 
+    // centered text helper (keeps font/size boilerplate in one place)
+    txt(x, y, str, size, color, extra = {}) {
+        return this.add.text(x, y, str, {
+            fontFamily: this.fontName,
+            fontSize: size + 'px',
+            color: color,
+            ...extra
+        }).setOrigin(0.5);
+    }
+
     createMatrixTexture() {
         if (this.textures.exists('matrix_rain')) return;
 
@@ -87,12 +97,12 @@ class HackerScene extends Phaser.Scene {
         ctx.fillRect(0, 0, w, h);
 
         const chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%@&*+=<>';
-        const colWidth = 18;
-        const rowHeight = 18;
+        const colWidth = 22;
+        const rowHeight = 22;
         const cols = Math.floor(w / colWidth);
         const rows = Math.floor(h / rowHeight);
 
-        ctx.font = 'bold 14px monospace';
+        ctx.font = 'bold 18px monospace';
 
         for (let c = 0; c < cols; c++) {
             if (Math.random() < 0.22) continue;
@@ -110,7 +120,7 @@ class HackerScene extends Phaser.Scene {
                 } else {
                     ctx.fillStyle = 'rgba(0, 220, 75, ' + (fade * 0.78).toFixed(2) + ')';
                 }
-                ctx.fillText(ch, c * colWidth + 2, r * rowHeight + 14);
+                ctx.fillText(ch, c * colWidth + 2, r * rowHeight + 18);
             }
         }
 
@@ -137,14 +147,8 @@ class HackerScene extends Phaser.Scene {
         this.input.off('drop');
         this.input.off('dragend');
 
-        if (this.timerEvent) {
-            this.timerEvent.remove(false);
-            this.timerEvent = null;
-        }
-        if (this.pulseTween) {
-            this.pulseTween.stop();
-            this.pulseTween = null;
-        }
+        this.clearTimerAndPulse();
+
         if (this.keyHandler) {
             this.input.keyboard.off('keydown', this.keyHandler);
             this.keyHandler = null;
@@ -157,47 +161,31 @@ class HackerScene extends Phaser.Scene {
         const cx = this.scale.width / 2;
         const slide = this.slides[this.currentSlide];
 
-        const stepTxt = this.add.text(cx, 40, 'BACKSTORY (' + (this.currentSlide + 1) + '/3)', {
-            fontFamily: this.fontName,
-            fontSize: '14px',
-            color: '#e01020'
-        }).setOrigin(0.5);
+        // layout: image on the left, text column on the right
+        const imgX = 460, imgY = 405;
+        const colX = 840, colW = 572;
 
-        const titleTxt = this.add.text(cx, 78, slide.title, {
-            fontFamily: this.fontName,
-            fontSize: '20px',
-            color: '#ffffff'
-        }).setOrigin(0.5);
+        const stepTxt = this.txt(cx, 38, 'BACKSTORY (' + (this.currentSlide + 1) + '/3)', 20, '#e01020');
+        const titleTxt = this.txt(cx, 90, slide.title, 34, '#ffffff');
 
         let img;
         if (this.textures.exists(slide.imgKey)) {
-            img = this.add.image(cx, 225, slide.imgKey).setDisplaySize(380, 215);
+            img = this.add.image(imgX, imgY, slide.imgKey).setDisplaySize(640, 360);
         } else {
-            img = this.add.rectangle(cx, 225, 380, 215, 0x151515).setStrokeStyle(2, 0xcc0000);
+            img = this.add.rectangle(imgX, imgY, 640, 360, 0x151515).setStrokeStyle(3, 0xcc0000);
         }
 
-        const bodyTxt = this.add.text(cx, 415, slide.text, {
-            fontFamily: this.fontName,
-            fontSize: '14px',
-            color: '#e8e8e8',
-            align: 'center',
-            lineSpacing: 6,
-            wordWrap: { width: 490 }
-        }).setOrigin(0.5);
+        const bodyTxt = this.txt(colX, 380, slide.text, 24, '#e8e8e8', {
+            lineSpacing: 10,
+            wordWrap: { width: colW }
+        }).setOrigin(0, 0.5);
 
-        const clueTxt = this.add.text(cx, 535, slide.clue, {
-            fontFamily: this.fontName,
-            fontSize: '14px',
-            color: '#ff3b5c'
-        }).setOrigin(0.5);
+        const clueTxt = this.txt(colX, 565, slide.clue, 22, '#ff3b5c').setOrigin(0, 0.5);
 
-        const nextBtn = this.add.text(cx, 610, '[ NEXT > ]', {
-            fontFamily: this.fontName,
-            fontSize: '18px',
-            color: '#ffffff',
+        const nextBtn = this.txt(colX + colW - 110, 680, '[ NEXT > ]', 26, '#ffffff', {
             backgroundColor: '#cc0000',
-            padding: { x: 24, y: 12 }
-        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+            padding: { x: 36, y: 16 }
+        }).setInteractive({ useHandCursor: true });
 
         nextBtn.on('pointerdown', () => {
             this.currentSlide++;
@@ -248,48 +236,41 @@ class HackerScene extends Phaser.Scene {
         this.clearStage();
         const cx = this.scale.width / 2;
 
-        const header = this.add.text(cx, 48, stageTitle, {
-            fontFamily: this.fontName,
-            fontSize: '20px',
-            color: '#ff2020'
-        }).setOrigin(0.5);
+        const header = this.txt(cx, 60, stageTitle, 34, '#ff2020');
 
-        const hint = this.add.text(cx, 95, hintMsg, {
-            fontFamily: this.fontName,
-            fontSize: '13px',
-            color: '#cccccc',
+        const hint = this.txt(cx, 125, hintMsg, 20, '#cccccc', {
             align: 'center',
-            lineSpacing: 5,
-            wordWrap: { width: 500 }
-        }).setOrigin(0.5);
+            lineSpacing: 8,
+            wordWrap: { width: 900 }
+        });
 
         const scannerX = cx;
-        const scannerY = 240;
+        const scannerY = 290;
+        const scannerW = 520;
+        const scannerH = 240;
 
-        const scannerBox = this.add.rectangle(scannerX, scannerY, 260, 150, 0x101214, 0.9)
-            .setStrokeStyle(3, 0xcc0000);
+        const scannerBox = this.add.rectangle(scannerX, scannerY, scannerW, scannerH, 0x101214, 0.9)
+            .setStrokeStyle(4, 0xcc0000);
 
-        const scannerLabel = this.add.text(scannerX, scannerY, 'BIOMETRIC SCANNER\n(Drop Evidence Here)', {
-            fontFamily: this.fontName,
-            fontSize: '13px',
-            color: '#ff4d4d',
-            align: 'center'
-        }).setOrigin(0.5);
+        const scannerLabel = this.txt(scannerX, scannerY, 'BIOMETRIC SCANNER\n(Drop Evidence Here)', 22, '#ff4d4d', {
+            align: 'center',
+            lineSpacing: 8
+        });
 
-        const dropZone = this.add.zone(scannerX, scannerY, 260, 150).setRectangleDropZone(260, 150);
+        const dropZone = this.add.zone(scannerX, scannerY, scannerW, scannerH).setRectangleDropZone(scannerW, scannerH);
 
-        const feedback = this.add.text(cx, 355, '', {
-            fontFamily: this.fontName,
-            fontSize: '15px',
-            color: '#ffffff'
-        }).setOrigin(0.5);
+        const feedback = this.txt(cx, 450, '', 24, '#ffffff');
 
         this.stageObjects.push(header, hint, scannerBox, scannerLabel, dropZone, feedback);
 
+        const cardW = 280;
+        const cardH = 160;
+        const cardY = 620;
+        const gap = 380;
         const positions = [
-            { x: cx - 175, y: 495 },
-            { x: cx,       y: 495 },
-            { x: cx + 175, y: 495 }
+            { x: cx - gap, y: cardY },
+            { x: cx,       y: cardY },
+            { x: cx + gap, y: cardY }
         ];
 
         samples.forEach((item, i) => {
@@ -297,20 +278,15 @@ class HackerScene extends Phaser.Scene {
             const container = this.add.container(pos.x, pos.y);
 
             if (this.textures.exists(item.key)) {
-                const card = this.add.image(0, 0, item.key).setDisplaySize(160, 95);
+                const card = this.add.image(0, 0, item.key).setDisplaySize(cardW, cardH);
                 container.add(card);
             } else {
-                const box = this.add.rectangle(0, 0, 160, 95, 0x1d1d24).setStrokeStyle(2, 0xcc0000);
-                const txt = this.add.text(0, 0, item.label, {
-                    fontFamily: this.fontName,
-                    fontSize: '12px',
-                    color: '#ffffff',
-                    align: 'center'
-                }).setOrigin(0.5);
-                container.add([box, txt]);
+                const box = this.add.rectangle(0, 0, cardW, cardH, 0x1d1d24).setStrokeStyle(3, 0xcc0000);
+                const label = this.txt(0, 0, item.label, 20, '#ffffff', { align: 'center' });
+                container.add([box, label]);
             }
 
-            container.setSize(160, 95);
+            container.setSize(cardW, cardH);
             container.setInteractive({ draggable: true, useHandCursor: true });
             container.startX = pos.x;
             container.startY = pos.y;
@@ -335,7 +311,7 @@ class HackerScene extends Phaser.Scene {
                 solved = true;
                 gameObject.x = scannerX;
                 gameObject.y = scannerY;
-                scannerBox.setStrokeStyle(3, 0x39ff88);
+                scannerBox.setStrokeStyle(4, 0x39ff88);
                 feedback.setText('VERIFIED! ACCESS GRANTED').setColor('#39ff88');
 
                 this.time.delayedCall(900, () => {
@@ -362,25 +338,14 @@ class HackerScene extends Phaser.Scene {
         this.clearStage();
         const cx = this.scale.width / 2;
 
-        const header = this.add.text(cx, 65, 'STAGE 2: SECURITY CHECK', {
-            fontFamily: this.fontName,
-            fontSize: '20px',
-            color: '#ff2020'
-        }).setOrigin(0.5);
+        const header = this.txt(cx, 75, 'STAGE 2: SECURITY CHECK', 34, '#ff2020');
 
-        const qText = this.add.text(cx, 155, 'What is the Manager\'s ID number?', {
-            fontFamily: this.fontName,
-            fontSize: '16px',
-            color: '#ffffff',
+        const qText = this.txt(cx, 190, 'What is the Manager\'s ID number?', 30, '#ffffff', {
             align: 'center',
-            wordWrap: { width: 480 }
-        }).setOrigin(0.5);
+            wordWrap: { width: 900 }
+        });
 
-        const feedback = this.add.text(cx, 540, '', {
-            fontFamily: this.fontName,
-            fontSize: '15px',
-            color: '#ffffff'
-        }).setOrigin(0.5);
+        const feedback = this.txt(cx, 670, '', 24, '#ffffff');
 
         this.stageObjects.push(header, qText, feedback);
 
@@ -391,13 +356,12 @@ class HackerScene extends Phaser.Scene {
         ];
 
         options.forEach((opt, i) => {
-            const btn = this.add.text(cx, 260 + (i * 80), opt.text, {
-                fontFamily: this.fontName,
-                fontSize: '17px',
-                color: '#ffffff',
+            const btn = this.txt(cx, 305 + (i * 110), opt.text, 28, '#ffffff', {
                 backgroundColor: '#1c1c22',
-                padding: { x: 35, y: 14 }
-            }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+                align: 'center',
+                fixedWidth: 520,
+                padding: { x: 0, y: 20 }
+            }).setInteractive({ useHandCursor: true });
 
             btn.on('pointerdown', () => {
                 if (opt.correct) {
@@ -424,67 +388,29 @@ class HackerScene extends Phaser.Scene {
         let typedAnswer = '';
         let puzzleEnded = false;
 
-        const title = this.add.text(cx, 55, 'FINAL SECURITY CHECK', {
-            fontFamily: this.fontName,
-            fontSize: '20px',
-            color: '#ffffff'
-        }).setOrigin(0.5);
+        const title = this.txt(cx, 55, 'FINAL SECURITY CHECK', 34, '#ffffff');
+        const sub = this.txt(cx, 103, 'CAESAR CIPHER', 20, '#cccccc');
+        const timerTxt = this.txt(cx, 165, 'TIME LEFT: 30', 34, '#ff2020');
 
-        const sub = this.add.text(cx, 92, 'CAESAR CIPHER', {
-            fontFamily: this.fontName,
-            fontSize: '14px',
-            color: '#cccccc'
-        }).setOrigin(0.5);
+        const box = this.add.rectangle(cx, 445, 760, 430, 0x121214, 0.92).setStrokeStyle(3, 0xcc0000);
 
-        const timerTxt = this.add.text(cx, 150, 'TIME LEFT: 30', {
-            fontFamily: this.fontName,
-            fontSize: '22px',
-            color: '#ff2020'
-        }).setOrigin(0.5);
+        const encLabel = this.txt(cx, 285, 'ENCRYPTED MESSAGE', 20, '#ffffff');
+        const cipherTxt = this.txt(cx, 360, 'F R G H', 64, '#ff2020');
 
-        const box = this.add.rectangle(cx, 370, 490, 320, 0x121214, 0.92).setStrokeStyle(2, 0xcc0000);
-
-        const encLabel = this.add.text(cx, 245, 'ENCRYPTED MESSAGE', {
-            fontFamily: this.fontName,
-            fontSize: '14px',
-            color: '#ffffff'
-        }).setOrigin(0.5);
-
-        const cipherTxt = this.add.text(cx, 305, 'F R G H', {
-            fontFamily: this.fontName,
-            fontSize: '36px',
-            color: '#ff2020'
-        }).setOrigin(0.5);
-
-        const hintTxt = this.add.text(cx, 365, 'Hint: Shift each letter 3 positions backward.', {
-            fontFamily: this.fontName,
-            fontSize: '12px',
-            color: '#cccccc',
+        const hintTxt = this.txt(cx, 430, 'Hint: Shift each letter 3 positions backward.', 18, '#cccccc', {
             align: 'center',
-            wordWrap: { width: 440 }
-        }).setOrigin(0.5);
+            wordWrap: { width: 680 }
+        });
 
-        const inputBox = this.add.rectangle(cx, 430, 340, 48, 0x080808).setStrokeStyle(2, 0xcc0000);
+        const inputBox = this.add.rectangle(cx, 510, 480, 64, 0x080808).setStrokeStyle(3, 0xcc0000);
+        const inputTxt = this.txt(cx, 510, 'TYPE ANSWER...', 28, '#777777');
 
-        const inputTxt = this.add.text(cx, 430, 'TYPE ANSWER...', {
-            fontFamily: this.fontName,
-            fontSize: '18px',
-            color: '#777777'
-        }).setOrigin(0.5);
-
-        const submitBtn = this.add.text(cx, 495, '[ DECRYPT ]', {
-            fontFamily: this.fontName,
-            fontSize: '18px',
-            color: '#ffffff',
+        const submitBtn = this.txt(cx, 590, '[ DECRYPT ]', 26, '#ffffff', {
             backgroundColor: '#cc0000',
-            padding: { x: 28, y: 10 }
-        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+            padding: { x: 40, y: 14 }
+        }).setInteractive({ useHandCursor: true });
 
-        const msgTxt = this.add.text(cx, 575, '', {
-            fontFamily: this.fontName,
-            fontSize: '14px',
-            color: '#ffffff'
-        }).setOrigin(0.5);
+        const msgTxt = this.txt(cx, 725, '', 24, '#ffffff');
 
         this.stageObjects.push(title, sub, timerTxt, box, encLabel, cipherTxt, hintTxt, inputBox, inputTxt, submitBtn, msgTxt);
 
