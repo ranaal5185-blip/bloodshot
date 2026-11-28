@@ -1,15 +1,12 @@
 /* ==========================================================================
-   AnalystScene
-   Part 1 (Student 3): core gameplay - messages, answers, mistakes, end result
-   Part 2 (Student 4): analyst tools - interface, scanner, activity log, effects
+   AnalystScene:Aroub & Ghala
    ========================================================================== */
-
 const MAX_MISTAKES = 3;
 const SCREEN = { w: 1552, h: 790 };
-const HOME = { x: 1446, y: 207 };   // scanner resting position
+const HOME = { x: 1446, y: 207 };   // Scanner resting position
 
 /* ==========================================================================
-   PART 1 - CORE GAMEPLAY
+   PART 1 - CORE GAMEPLAY (Aroub)
    ========================================================================== */
 class AnalystScene extends Phaser.Scene {
   constructor() {
@@ -19,10 +16,11 @@ class AnalystScene extends Phaser.Scene {
     this.busy = false;
   }
 
-  // Load the messages data and the interface background
+  // Load the messages data, the interface background and the hammer image
   preload() {
     this.load.json('analystMessages', 'js/data/messages.json');
     this.load.image('analystReference', 'assets/images/analyst-reference.png');
+    this.load.image('hammer', 'assets/images/hammer.png');
   }
 
   // Reset the state, shuffle the messages, build the tools, show the first message
@@ -40,7 +38,7 @@ class AnalystScene extends Phaser.Scene {
   // Show the next message, or finish the game if there are no more
   showMessage() {
     if (this.currentIndex >= this.messages.length) {
-      this.scene.start('EndScene', { result: 'secured' });
+      this.scene.start('NotifyScene', { show: 'success' });   // gigi: success screen first
       return;
     }
     this.progressText.setText(`MESSAGE ${this.currentIndex + 1} / ${this.messages.length}`);
@@ -63,7 +61,7 @@ class AnalystScene extends Phaser.Scene {
     const correct = answer === this.messages[this.currentIndex].type;
     if (!correct) this.mistakes++;
 
-    // Approving a real threat = breach (hammer animation, so we wait longer)
+    // Approving a real threat counts as a breach (hammer animation, so the delay is longer)
     const breach = !correct && answer === 'safe';
     const delay = breach ? 1400 : 700;
     if (breach) this.playHammer();
@@ -77,7 +75,7 @@ class AnalystScene extends Phaser.Scene {
     if (this.mistakes >= MAX_MISTAKES) {
       this.cameras.main.shake(650, 0.018);
       this.cameras.main.flash(350, 170, 0, 0);
-      this.time.delayedCall(delay, () => this.scene.start('EndScene', { result: 'fired' }));
+      this.time.delayedCall(delay, () => this.scene.start('NotifyScene', { show: 'failed' }));   // gigi: broken screen first
       return;
     }
 
@@ -96,10 +94,64 @@ class AnalystScene extends Phaser.Scene {
       color
     }).setOrigin(0.5).setInteractive({ useHandCursor: true }).on('pointerdown', callback);
   }
+
+  // ===== START: PHYSICS (hammer + broken glass) =====
+  // Hammer smashes the screen when a real threat is approved
+  playHammer() {
+    const ix = this.ruleOpen ? 700 : 920, iy = 430;   // impact point
+
+    // The image origin is the center of the hammer head
+    const hammer = this.add.image(ix, iy - 300, 'hammer')
+      .setOrigin(0.417, 0.254).setScale(0.3).setAngle(-25).setDepth(110);
+
+    // The hammer falls, then the screen cracks
+    this.tweens.add({
+      targets: hammer, y: iy, angle: 0, duration: 390, ease: 'Cubic.easeIn',
+      onComplete: () => {
+        this.cameras.main.shake(340, 0.018);
+        this.cameras.main.flash(170, 180, 0, 15);
+
+        const cracks = this.drawCracks(ix, iy);
+        const warning = this.txt(ix, iy + 150, 'SECURITY BREACH', 30, '#ff263d').setOrigin(0.5).setDepth(112);
+        const all = [hammer, cracks, warning];
+
+        this.tweens.add({ targets: all, alpha: 0, delay: 620, duration: 380, onComplete: () => all.forEach(o => o.destroy()) });
+      }
+    });
+  }
+
+  // Glass cracks: 16 main fractures with 2 branches each
+  drawCracks(cx, cy) {
+    const cracks = this.add.graphics().setDepth(105);
+
+    for (let i = 0; i < 16; i++) {
+      const a = (Math.PI * 2 * i) / 16 + Phaser.Math.FloatBetween(-0.09, 0.09);
+      const dx = Math.cos(a), dy = Math.sin(a);
+      const reach = Phaser.Math.Between(190, 285), bend = Phaser.Math.FloatBetween(-30, 30);
+      const p1 = { x: cx + dx * 62 - dy * bend, y: cy + dy * 62 + dx * bend };
+      const p2 = { x: cx + dx * 145 + dy * bend, y: cy + dy * 145 - dx * bend };
+
+      // Main fracture
+      cracks.lineStyle(4, 0xff263d, 0.98).beginPath().moveTo(cx, cy)
+        .lineTo(p1.x, p1.y).lineTo(p2.x, p2.y).lineTo(cx + dx * reach, cy + dy * reach).strokePath();
+
+      // Two thin branches
+      cracks.lineStyle(2.2, 0xff5264, 0.9);
+      [-1, 1].forEach((side, n) => {
+        const t = 0.35 + n * 0.35;
+        const bx = p1.x + (p2.x - p1.x) * t, by = p1.y + (p2.y - p1.y) * t;
+        cracks.beginPath().moveTo(bx, by)
+          .lineTo(bx + Math.cos(a + side * 0.72) * 58, by + Math.sin(a + side * 0.72) * 58)
+          .lineTo(bx + Math.cos(a + side * 0.92) * 92, by + Math.sin(a + side * 0.92) * 92).strokePath();
+      });
+    }
+    return cracks;
+  }
+  // ===== END: PHYSICS =====
 }
 
 /* ==========================================================================
-   PART 2 - ANALYST TOOLS
+   PART 2 - ANALYST TOOLS (Ghala)
    ========================================================================== */
 Object.assign(AnalystScene.prototype, {
 
@@ -206,10 +258,7 @@ Object.assign(AnalystScene.prototype, {
     this.scannerGlow = this.add.graphics();
     this.scannerEye = this.add.image(0, 0, 'eye0').setDisplaySize(51, 51);
     this.scannerRing = this.add.graphics();
-    this.eyeLid = this.add.graphics().setVisible(false);
-    this.eyeLid.fillStyle(0x19ff65, 1).fillRoundedRect(-27, -19, 54, 38, 18);
-    this.eyeLid.lineStyle(3, 0x087b35, 1).lineBetween(-23, 0, 23, 0);
-    this.scanner.add([this.scannerGlow, this.scannerEye, this.eyeLid, this.scannerRing]);
+    this.scanner.add([this.scannerGlow, this.scannerEye, this.scannerRing]);
     this.drawScanner(0xaaaaaa);
 
     // Original eye scale (used by the eye animations)
@@ -230,7 +279,7 @@ Object.assign(AnalystScene.prototype, {
       .setOrigin(0).setDepth(60).setInteractive({ cursor: 'grab' });
   },
 
-  // Grab -> drag -> release
+  // Grab, drag and release the scanner
   createScannerInput() {
     this.scannerHit.on('pointerdown', pointer => {
       if (this.scans <= 0 || this.busy || this.scanning || this.holdingScanner) return;
@@ -248,7 +297,7 @@ Object.assign(AnalystScene.prototype, {
 
   /* ---------- Helpers ---------- */
 
-  // Create a text object
+  // Create a text object with the default font and color
   txt(x, y, text, size, color = '#e8e8e8') {
     return this.add.text(x, y, text, { fontFamily: 'Consolas, Arial, sans-serif', fontSize: `${size}px`, color });
   },
@@ -382,9 +431,7 @@ Object.assign(AnalystScene.prototype, {
 
     this.scanner.setPosition(HOME.x, HOME.y).setScale(0.88);
     this.scannerGlow.setAlpha(1);
-    this.tweens.killTweensOf(this.scannerEye);
-    this.scannerEye.setScale(this.eyeBaseX, this.eyeBaseY).clearTint();
-    this.eyeLid.setVisible(false).setScale(1, 0);
+    this.resetEye().clearTint();
     this.scanResult.setText(this.scans ? '' : 'OUT OF ENERGY');
     this.drawScanner(0xaaaaaa);
     this.updateBatteries();
@@ -396,21 +443,24 @@ Object.assign(AnalystScene.prototype, {
 
   /* ---------- Eye animations ---------- */
 
+  // Stop the eye animations and return it to its normal size
+  resetEye() {
+    this.tweens.killTweensOf(this.scannerEye);
+    return this.scannerEye.setScale(this.eyeBaseX, this.eyeBaseY);
+  },
+
   // Quick double blink
   blinkEye() {
-    this.tweens.killTweensOf(this.scannerEye);
-    this.scannerEye.setScale(this.eyeBaseX, this.eyeBaseY);
+    this.resetEye();
     this.tweens.add({ targets: this.scannerEye, scaleY: this.eyeBaseY * 0.08, duration: 110, yoyo: true, repeat: 1 });
   },
 
-  // Trusted = nothing on the eye (the tool glows green) | Untrusted = shocked eye, arrow hit, blood
+  // Show the scan result: trusted leaves the eye unchanged (only the scanner glows green),
+  // untrusted shocks the eye, hits it with an arrow and sprays blood
   animateEyeResult(safe) {
-    const eye = this.scannerEye;
-    this.tweens.killTweensOf(eye);
-    eye.setScale(this.eyeBaseX, this.eyeBaseY).setAlpha(1);
-    this.eyeLid.setVisible(false).setScale(1, 0);
+    const eye = this.resetEye().setAlpha(1);
 
-    if (safe) return;   // trusted: the eye stays normal, only the tool glows green
+    if (safe) return;   // Trusted: the eye stays unchanged
 
     // The eye opens in shock
     this.tweens.add({ targets: eye, scaleY: this.eyeBaseY * 1.2, duration: 110, yoyo: true, ease: 'Back.easeOut' });
@@ -427,7 +477,7 @@ Object.assign(AnalystScene.prototype, {
       onComplete: () => {
         // Hit: red eye, blood, red flash, scanner shake
         eye.setTint(0xff182e);
-        this.bloodBurst(this.ruleOpen ? 700 : 920, 420);
+        this.bloodBurst();
         this.cameras.main.flash(120, 255, 20, 45);
         this.tweens.add({ targets: this.scanner, x: this.scanner.x + 5, duration: 45, yoyo: true, repeat: 3 });
         this.time.delayedCall(350, () => arrow.destroy());
@@ -437,97 +487,19 @@ Object.assign(AnalystScene.prototype, {
 
   /* ---------- Effects ---------- */
 
-  // Blood spray: 22 small droplets + 5 big splashes
-  bloodBurst(x, y) {
-    const layer = this.add.container(0, 0).setDepth(120);
-    const colors = [0x9e0018, 0xd00025, 0xf01838];
-    const { Between, FloatBetween } = Phaser.Math;
+  // Blood drips running down the email panel, then they fade out
+  bloodBurst() {
+    const { Between } = Phaser.Math;
+    const colors = [0x6e0010, 0x9e0018, 0xd00025, 0xf01838];
+    const left = 455, right = this.ruleOpen ? 940 : 1385;   // email panel edges
 
-    // Add a shape to the layer and fade it out
-    const fade = (shape, props) => {
-      layer.add(shape);
-      this.tweens.add({ targets: shape, alpha: 0, onComplete: () => shape.destroy(), ...props });
-    };
+    for (let i = 0; i < (right - left) / 15; i++) {         // wider panel = more drips
+      const drip = this.add.rectangle(Between(left, right), Between(195, 650), Between(3, 8), 1, Phaser.Utils.Array.GetRandom(colors), 0.92)
+        .setOrigin(0.5, 0).setDepth(120);
+      const delay = Between(0, 300);
 
-    for (let i = 0; i < 22; i++) {
-      const angle = FloatBetween(-Math.PI, Math.PI), distance = Between(45, 230), size = Between(2, 7);
-      const drop = this.add.ellipse(
-        x, y, size * FloatBetween(0.8, 1.8), size * 2.2, Phaser.Utils.Array.GetRandom(colors), 0.95
-      ).setRotation(angle);
-      fade(drop, {
-        x: x + Math.cos(angle) * distance, y: y + Math.sin(angle) * distance * 0.62,
-        scale: 0.35, duration: Between(420, 760), ease: 'Cubic.easeOut'
-      });
+      this.tweens.add({ targets: drip, scaleY: Between(30, 120), duration: Between(500, 1000), delay });   // grows downward
+      this.tweens.add({ targets: drip, alpha: 0, delay: 1000, duration: 700, onComplete: () => drip.destroy() });   // fade out
     }
-    for (let i = 0; i < 5; i++) {
-      const splash = this.add.circle(x + Between(-85, 85), y + Between(-65, 65), Between(5, 11), 0xb90020, 0.9);
-      fade(splash, { scale: 1.8, duration: 900, delay: 120 });
-    }
-    this.time.delayedCall(1150, () => layer.destroy());
-  },
-
-  // ===== START: PHYSICS (hammer + broken glass) =====
-  // Hammer smashes the screen when a real threat is approved
-  playHammer() {
-    const ix = this.ruleOpen ? 700 : 920, iy = 430;   // impact point
-    const hammer = this.add.container(ix - 185, iy + 185).setDepth(110);
-    const g = this.add.graphics();
-
-    // Wooden handle (3 layers) + end cap
-    [[34, 0x49301f, 1, -142, 137, -22, 18], [25, 0xb9824b, 1, -142, 137, -22, 18], [5, 0xd6a36a, 0.8, -132, 126, -28, 23]]
-      .forEach(([w, c, a, x1, y1, x2, y2]) => g.lineStyle(w, c, a).lineBetween(x1, y1, x2, y2));
-    g.fillStyle(0x49301f).fillCircle(-142, 137, 17);
-
-    // Steel head (4 layers), outline, and neck
-    [[0x20242b, -42, -76, 62, 142, 12], [0x69727d, -38, -72, 54, 134, 10], [0xc4cbd2, -34, -68, 13, 126, 6], [0x414852, 1, -67, 12, 124, 5]]
-      .forEach(([c, x, y, w, h, r]) => g.fillStyle(c).fillRoundedRect(x, y, w, h, r));
-    g.lineStyle(3, 0xe0e5e9, 0.75).strokeRoundedRect(-38, -72, 54, 134, 10);
-    g.fillStyle(0x343941).fillRoundedRect(-39, 5, 28, 34, 6);
-    hammer.add(g);
-
-    // The hammer falls, then the screen cracks
-    this.tweens.add({
-      targets: hammer, x: ix, y: iy, duration: 390, ease: 'Cubic.easeIn',
-      onComplete: () => {
-        this.cameras.main.shake(340, 0.018);
-        this.cameras.main.flash(170, 180, 0, 15);
-
-        const cracks = this.drawCracks(ix, iy);
-        const warning = this.txt(ix, iy + 150, 'SECURITY BREACH', 30, '#ff263d').setOrigin(0.5).setDepth(112);
-        const all = [hammer, cracks, warning];
-
-        this.tweens.add({ targets: all, alpha: 0, delay: 620, duration: 380, onComplete: () => all.forEach(o => o.destroy()) });
-      }
-    });
-  },
-
-  // Glass cracks: 16 main fractures with 2 branches each, plus an impact ring
-  drawCracks(cx, cy) {
-    const cracks = this.add.graphics().setDepth(105);
-
-    for (let i = 0; i < 16; i++) {
-      const a = (Math.PI * 2 * i) / 16 + Phaser.Math.FloatBetween(-0.09, 0.09);
-      const dx = Math.cos(a), dy = Math.sin(a);
-      const reach = Phaser.Math.Between(190, 285), bend = Phaser.Math.FloatBetween(-30, 30);
-      const p1 = { x: cx + dx * 62 - dy * bend, y: cy + dy * 62 + dx * bend };
-      const p2 = { x: cx + dx * 145 + dy * bend, y: cy + dy * 145 - dx * bend };
-
-      // Main fracture
-      cracks.lineStyle(4, 0xff263d, 0.98).beginPath().moveTo(cx, cy)
-        .lineTo(p1.x, p1.y).lineTo(p2.x, p2.y).lineTo(cx + dx * reach, cy + dy * reach).strokePath();
-
-      // Two thin branches
-      cracks.lineStyle(2.2, 0xff5264, 0.9);
-      [-1, 1].forEach((side, n) => {
-        const t = 0.35 + n * 0.35;
-        const bx = p1.x + (p2.x - p1.x) * t, by = p1.y + (p2.y - p1.y) * t;
-        cracks.beginPath().moveTo(bx, by)
-          .lineTo(bx + Math.cos(a + side * 0.72) * 58, by + Math.sin(a + side * 0.72) * 58)
-          .lineTo(bx + Math.cos(a + side * 0.92) * 92, by + Math.sin(a + side * 0.92) * 92).strokePath();
-      });
-    }
-    cracks.lineStyle(3, 0xff9aa5, 0.9).strokeCircle(cx, cy, 34);   // impact ring
-    return cracks;
   }
-  // ===== END: PHYSICS =====
 });
