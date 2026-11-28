@@ -1,3 +1,5 @@
+
+
 class HackerScene extends Phaser.Scene {
     constructor() {
         super('HackerScene');
@@ -6,15 +8,15 @@ class HackerScene extends Phaser.Scene {
   preload() {
 
     if (!this.textures.exists('coffe1')) {
-        this.load.image('coffe1', './assets/coffe1.jpeg');
+        this.load.image('coffe1', './assets/images/coffe1.jpeg');
     }
 
     if (!this.textures.exists('voice1')) {
-        this.load.image('voice1', './assets/voice1.jpeg');
+        this.load.image('voice1', './assets/images/voice1.jpeg');
     }
 
     if (!this.textures.exists('manager1')) {
-        this.load.image('manager1', './assets/manager1.jpeg');
+        this.load.image('manager1', './assets/images/manager1.jpeg');
     }
 
 }
