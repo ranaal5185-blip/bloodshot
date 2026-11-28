@@ -1,4 +1,4 @@
-/* ===================== MenuScene (نسخة طبق الأصل من الفيديو) ===================== */
+/* ===================== MenuScene ===================== */
 class MenuScene extends Phaser.Scene {
   constructor() { super('MenuScene'); }
 
@@ -17,7 +17,7 @@ class MenuScene extends Phaser.Scene {
       hl.setInteractive({ useHandCursor: true })
         .on('pointerover', () => hl.setFillStyle(0xffffff, 0.14))
         .on('pointerout', () => hl.setFillStyle(0xffffff, 0))
-        .on('pointerdown', () => this.scene.start(scene));
+        .on('pointerdown', () => this.scene.start('DeskScene', { role: k }));   // gigi: desk first, its PRESS opens the path
     };
     mk('hacker', 'HackerScene');
     mk('analyst', 'AnalystScene');
@@ -28,7 +28,7 @@ class MenuScene extends Phaser.Scene {
   update(time) {
     const t = ((time - this.t0) / 1000) % VIDEO.loop;
     const pick = (arr, i) => {
-      if (arr[i] && arr[i][0] > t) i = 0;                       // رجعنا لبداية الدورة
+      if (arr[i] && arr[i][0] > t) i = 0;                      
       while (i + 1 < arr.length && arr[i + 1][0] <= t) i++;
       return i;
     };
